@@ -1,0 +1,32 @@
+# Node modules (no se suben, se instalan con npm install)
+node_modules/
+
+# Archivos de dependencias de Electron
+dist/
+build/
+
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Entornos
+.env
+.env.local
+
+# Cache de compilación
+out/
+.cache/
+*.tsbuildinfo
+
+# Paquetes generados (ejecutables)
+*.exe
+*.dmg
+*.AppImage
+*.snap
