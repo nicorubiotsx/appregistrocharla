@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Seguridad</title>
+  <style>
+    /* Fondo con colores de seguridad/prevención */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(135deg, #ffeb3b, #ff9800);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Tarjeta */
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      width: 350px;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Título */
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    /* Inputs */
+    .login-box input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .login-box input:focus {
+      border-color: #ff9800;
+      box-shadow: 0 0 5px rgba(255,152,0,0.6);
+    }
+
+    /* Botones */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-login {
+      background: #4caf50; /* verde seguridad */
+      color: white;
+    }
+
+    .btn-login:hover {
+      background: #388e3c;
+    }
+
+    .btn-fingerprint {
+      background: #ffe082; /* amarillo suave */
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 600;
+    }
+
+    .btn-fingerprint:hover {
+      background: #ffca28; /* amarillo más fuerte */
+    }
+
+    /* Icono huella */
+    .fingerprint-icon {
+      width: 22px;
+      height: 22px;
+      background: url("https://cdn-icons-png.flaticon.com/512/2910/2910768.png") no-repeat center;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Acceso Seguro</h2>
+    <input type="text" placeholder="Usuario">
+    <input type="password" placeholder="Contraseña">
+    <button class="btn btn-login">Iniciar Sesión</button>
+    <button class="btn btn-fingerprint">
+      <span class="fingerprint-icon"></span> Ingresar con Huella
+    </button>
+  </div>
+</body>
+</html>
