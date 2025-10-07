@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Charlas - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-100 flex text-gray-800">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-green-900 text-white h-screen flex flex-col p-4">
+    <h1 class="text-2xl font-bold mb-8">🎤 Gestor Charlas</h1>
+    <nav class="flex flex-col gap-3">
+      <button onclick="mostrarSeccion('dashboard')" class="hover:bg-green-700 p-2 rounded">🏠 Dashboard</button>
+      <button onclick="mostrarSeccion('usuarios')" class="hover:bg-green-700 p-2 rounded">👥 Usuarios</button>
+      <button onclick="mostrarSeccion('charlas')" class="hover:bg-green-700 p-2 rounded">🗣️ Charlas</button>
+      <button onclick="mostrarSeccion('asistentes')" class="hover:bg-green-700 p-2 rounded">🙋 Asistentes</button>
+      <button onclick="mostrarSeccion('reportes')" class="hover:bg-green-700 p-2 rounded">📊 Reportes</button>
+      <button onclick="mostrarSeccion('config')" class="hover:bg-green-700 p-2 rounded">⚙️ Configuración</button>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-6 overflow-y-auto">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+      <h2 class="text-3xl font-semibold mb-6">Panel General</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h3 class="text-gray-500 text-sm">Charlas Totales</h3>
+          <p class="text-2xl font-bold">42</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h3 class="text-gray-500 text-sm">Usuarios Registrados</h3>
+          <p class="text-2xl font-bold">18</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h3 class="text-gray-500 text-sm">Charlas Este Mes</h3>
+          <p class="text-2xl font-bold">6</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h3 class="text-gray-500 text-sm">Promedio Asistencia</h3>
+          <p class="text-2xl font-bold">78%</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h4 class="text-lg font-semibold mb-2">Charlas por Categoría</h4>
+          <canvas id="chartCharlas"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h4 class="text-lg font-semibold mb-2">Asistencias por Fecha</h4>
+          <canvas id="chartAsistencia"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- USUARIOS -->
+    <section id="usuarios" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">👥 Registro de Usuarios</h2>
+      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
+        <input type="text" placeholder="Nombre completo" class="p-2 border rounded">
+        <input type="email" placeholder="Correo electrónico" class="p-2 border rounded">
+        <input type="text" placeholder="RUT o ID" class="p-2 border rounded">
+        <select class="p-2 border rounded">
+          <option>Rol</option>
+          <option>Admin</option>
+          <option>Ponente</option>
+          <option>Coordinador</option>
+        </select>
+        <input type="text" placeholder="Teléfono" class="p-2 border rounded">
+        <input type="text" placeholder="Área o Departamento" class="p-2 border rounded">
+        <input type="password" placeholder="Contraseña" class="p-2 border rounded">
+        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Usuario</button>
+      </form>
+    </section>
+
+    <!-- CHARLAS -->
+    <section id="charlas" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">🗣️ Registro de Charlas</h2>
+      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
+        <input type="text" placeholder="Título de la charla" class="p-2 border rounded">
+        <input type="text" placeholder="Lugar" class="p-2 border rounded">
+        <textarea placeholder="Descripción" class="p-2 border rounded col-span-2"></textarea>
+        <input type="date" class="p-2 border rounded">
+        <input type="time" class="p-2 border rounded">
+        <select class="p-2 border rounded">
+          <option>Ponente</option>
+          <option>Juan Pérez</option>
+          <option>Ana Torres</option>
+        </select>
+        <select class="p-2 border rounded">
+          <option>Categoría</option>
+          <option>Tecnología</option>
+          <option>Salud</option>
+          <option>Educación</option>
+        </select>
+        <input type="number" placeholder="Cupo máximo" class="p-2 border rounded">
+        <select class="p-2 border rounded">
+          <option>Estado</option>
+          <option>Programada</option>
+          <option>Realizada</option>
+          <option>Cancelada</option>
+        </select>
+        <input type="file" class="p-2 border rounded col-span-2">
+        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Charla</button>
+      </form>
+    </section>
+
+    <!-- ASISTENTES -->
+    <section id="asistentes" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">🙋 Registro de Asistentes</h2>
+      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
+        <input type="text" placeholder="Nombre completo" class="p-2 border rounded">
+        <input type="text" placeholder="RUT o ID" class="p-2 border rounded">
+        <input type="email" placeholder="Correo electrónico" class="p-2 border rounded">
+        <input type="text" placeholder="Teléfono" class="p-2 border rounded">
+        <select class="p-2 border rounded">
+          <option>Seleccionar Charla</option>
+          <option>Charla Tecnología</option>
+        </select>
+        <label class="col-span-2 flex items-center gap-2">
+          <input type="checkbox"> Asistencia confirmada
+        </label>
+        <textarea placeholder="Observaciones" class="p-2 border rounded col-span-2"></textarea>
+        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Asistente</button>
+      </form>
+    </section>
+
+    <!-- REPORTES -->
+    <section id="reportes" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">📊 Reportes</h2>
+      <div class="bg-white p-6 rounded-xl shadow grid grid-cols-3 gap-4 mb-6">
+        <input type="date" class="p-2 border rounded">
+        <input type="date" class="p-2 border rounded">
+        <select class="p-2 border rounded">
+          <option>Estado</option>
+          <option>Programada</option>
+          <option>Realizada</option>
+        </select>
+        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-3">Generar Reporte</button>
+      </div>
+      <table class="w-full bg-white rounded-xl shadow">
+        <thead class="bg-green-900 text-white">
+          <tr>
+            <th class="p-2">Charla</th>
+            <th class="p-2">Fecha</th>
+            <th class="p-2">Ponente</th>
+            <th class="p-2">Asistentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center border-b">
+            <td class="p-2">Charlas de Tecnología</td>
+            <td class="p-2">05/10/2025</td>
+            <td class="p-2">Juan Pérez</td>
+            <td class="p-2">58</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CONFIG -->
+    <section id="config" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">⚙️ Configuración</h2>
+      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
+        <input type="text" placeholder="Nombre de la institución" class="p-2 border rounded">
+        <input type="text" placeholder="Dirección" class="p-2 border rounded">
+        <input type="file" class="p-2 border rounded col-span-2">
+        <label class="flex items-center gap-2 col-span-2">
+          <input type="checkbox"> Activar notificaciones
+        </label>
+        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Configuración</button>
+      </form>
+    </section>
+
+  </main>
+
+  <script>
+    // Mostrar/Ocultar secciones
+    function mostrarSeccion(id) {
+      document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    // Cargar gráficos
+    new Chart(document.getElementById('chartCharlas'), {
+      type: 'bar',
+      data: {
+        labels: ['Educación', 'Tecnología', 'Salud', 'Cultura'],
+        datasets: [{ label: 'Charlas', data: [8, 15, 10, 6], backgroundColor: '#16a34a' }]
+      }
+    });
+
+    new Chart(document.getElementById('chartAsistencia'), {
+      type: 'line',
+      data: {
+        labels: ['01 Oct', '03 Oct', '05 Oct', '07 Oct'],
+        datasets: [{ label: 'Asistentes', data: [40, 55, 60, 48], borderColor: '#15803d', fill: false, tension: 0.3 }]
+      }
+    });
+  </script>
+
+</body>
+</html>
