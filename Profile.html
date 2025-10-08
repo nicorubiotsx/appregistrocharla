@@ -19,7 +19,6 @@
       <button onclick="mostrarSeccion('charlas')" class="hover:bg-green-700 p-2 rounded">🗣️ Charlas</button>
       <button onclick="mostrarSeccion('asistentes')" class="hover:bg-green-700 p-2 rounded">🙋 Asistentes</button>
       <button onclick="mostrarSeccion('reportes')" class="hover:bg-green-700 p-2 rounded">📊 Reportes</button>
-      <button onclick="mostrarSeccion('config')" class="hover:bg-green-700 p-2 rounded">⚙️ Configuración</button>
     </nav>
   </aside>
 
@@ -32,25 +31,27 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white p-4 rounded-xl shadow">
           <h3 class="text-gray-500 text-sm">Charlas Totales</h3>
-          <p class="text-2xl font-bold">42</p>
+          <p id="totalCharlas" class="text-2xl font-bold">0</p>
         </div>
         <div class="bg-white p-4 rounded-xl shadow">
           <h3 class="text-gray-500 text-sm">Usuarios Registrados</h3>
-          <p class="text-2xl font-bold">18</p>
+          <p id="usuariosTotal" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h3 class="text-gray-500 text-sm">Asistencias Totales</h3>
+          <p id="totalAsistentes" class="text-2xl font-bold">0</p>
         </div>
         <div class="bg-white p-4 rounded-xl shadow">
           <h3 class="text-gray-500 text-sm">Charlas Este Mes</h3>
-          <p class="text-2xl font-bold">6</p>
-        </div>
-        <div class="bg-white p-4 rounded-xl shadow">
-          <h3 class="text-gray-500 text-sm">Promedio Asistencia</h3>
-          <p class="text-2xl font-bold">78%</p>
+          <p id="charlasEsteMes" class="text-2xl font-bold">0</p>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white p-4 rounded-xl shadow">
-          <h4 class="text-lg font-semibold mb-2">Charlas por Categoría</h4>
-          <canvas id="chartCharlas"></canvas>
+          <h4 class="text-lg font-semibold mb-2">Últimas Charlas</h4>
+          <div id="listaCharlasRecientes" class="space-y-2">
+            <!-- Se cargarán dinámicamente -->
+          </div>
         </div>
         <div class="bg-white p-4 rounded-xl shadow">
           <h4 class="text-lg font-semibold mb-2">Asistencias por Fecha</h4>
@@ -61,148 +62,548 @@
 
     <!-- USUARIOS -->
     <section id="usuarios" class="hidden">
-      <h2 class="text-2xl font-bold mb-4">👥 Registro de Usuarios</h2>
-      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
-        <input type="text" placeholder="Nombre completo" class="p-2 border rounded">
-        <input type="email" placeholder="Correo electrónico" class="p-2 border rounded">
-        <input type="text" placeholder="RUT o ID" class="p-2 border rounded">
-        <select class="p-2 border rounded">
-          <option>Rol</option>
-          <option>Admin</option>
-          <option>Ponente</option>
-          <option>Coordinador</option>
-        </select>
-        <input type="text" placeholder="Teléfono" class="p-2 border rounded">
-        <input type="text" placeholder="Área o Departamento" class="p-2 border rounded">
-        <input type="password" placeholder="Contraseña" class="p-2 border rounded">
-        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Usuario</button>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">👥 Usuarios Registrados</h2>
+        <button onclick="mostrarFormularioUsuario()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">
+          + Agregar Usuario
+        </button>
+      </div>
+
+      <!-- Formulario de Usuario (oculto inicialmente) -->
+      <form id="formUsuario" class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4 mb-6 hidden">
+        <input type="text" id="nombreUsuario" placeholder="Nombre completo" class="p-2 border rounded" required>
+        <input type="email" id="emailUsuario" placeholder="Correo electrónico" class="p-2 border rounded" required>
+        <input type="text" id="rolUsuario" placeholder="Rol" class="p-2 border rounded" value="Asistente">
+        <input type="text" id="areaUsuario" placeholder="Área/Departamento" class="p-2 border rounded">
+        <button type="button" onclick="guardarUsuario()" class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">
+          Guardar Usuario
+        </button>
       </form>
+
+      <table class="w-full bg-white rounded-xl shadow">
+        <thead class="bg-green-900 text-white">
+          <tr>
+            <th class="p-2">ID</th>
+            <th class="p-2">Nombre</th>
+            <th class="p-2">Correo</th>
+            <th class="p-2">Rol</th>
+            <th class="p-2">Área</th>
+            <th class="p-2">Fecha Registro</th>
+          </tr>
+        </thead>
+        <tbody id="tablaUsuarios" class="text-center">
+          <!-- Los usuarios se cargarán aquí dinámicamente -->
+        </tbody>
+      </table>
     </section>
 
     <!-- CHARLAS -->
     <section id="charlas" class="hidden">
-      <h2 class="text-2xl font-bold mb-4">🗣️ Registro de Charlas</h2>
-      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
-        <input type="text" placeholder="Título de la charla" class="p-2 border rounded">
-        <input type="text" placeholder="Lugar" class="p-2 border rounded">
-        <textarea placeholder="Descripción" class="p-2 border rounded col-span-2"></textarea>
-        <input type="date" class="p-2 border rounded">
-        <input type="time" class="p-2 border rounded">
-        <select class="p-2 border rounded">
-          <option>Ponente</option>
-          <option>Juan Pérez</option>
-          <option>Ana Torres</option>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">🗣️ Gestión de Charlas</h2>
+        <button onclick="mostrarFormularioCharla()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">
+          + Nueva Charla
+        </button>
+      </div>
+
+      <!-- Formulario de Charla -->
+      <form id="formCharla" class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4 mb-6">
+        <input type="text" id="tituloCharla" placeholder="Título de la charla" class="p-2 border rounded" required>
+        <input type="text" id="ponenteCharla" placeholder="Nombre del ponente" class="p-2 border rounded" required>
+        <textarea id="descripcionCharla" placeholder="Descripción" class="p-2 border rounded col-span-2" rows="3"></textarea>
+        <input type="date" id="fechaCharla" class="p-2 border rounded" required>
+        <input type="time" id="horaCharla" class="p-2 border rounded" required>
+        <select id="categoriaCharla" class="p-2 border rounded">
+          <option value="">Seleccionar categoría</option>
+          <option value="Tecnología">Tecnología</option>
+          <option value="Salud">Salud</option>
+          <option value="Educación">Educación</option>
+          <option value="Cultura">Cultura</option>
+          <option value="Desarrollo Personal">Desarrollo Personal</option>
         </select>
-        <select class="p-2 border rounded">
-          <option>Categoría</option>
-          <option>Tecnología</option>
-          <option>Salud</option>
-          <option>Educación</option>
-        </select>
-        <input type="number" placeholder="Cupo máximo" class="p-2 border rounded">
-        <select class="p-2 border rounded">
-          <option>Estado</option>
-          <option>Programada</option>
-          <option>Realizada</option>
-          <option>Cancelada</option>
-        </select>
-        <input type="file" class="p-2 border rounded col-span-2">
-        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Charla</button>
+        <input type="number" id="cupoCharla" placeholder="Cupo máximo" class="p-2 border rounded" min="1">
+        <button type="button" onclick="guardarCharla()" class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">
+          Guardar Charla
+        </button>
       </form>
+
+      <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-green-900 text-white">
+            <tr>
+              <th class="p-2">Título</th>
+              <th class="p-2">Ponente</th>
+              <th class="p-2">Fecha</th>
+              <th class="p-2">Hora</th>
+              <th class="p-2">Categoría</th>
+              <th class="p-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCharlas" class="text-center">
+            <!-- Las charlas se cargarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- ASISTENTES -->
     <section id="asistentes" class="hidden">
-      <h2 class="text-2xl font-bold mb-4">🙋 Registro de Asistentes</h2>
-      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
-        <input type="text" placeholder="Nombre completo" class="p-2 border rounded">
-        <input type="text" placeholder="RUT o ID" class="p-2 border rounded">
-        <input type="email" placeholder="Correo electrónico" class="p-2 border rounded">
-        <input type="text" placeholder="Teléfono" class="p-2 border rounded">
-        <select class="p-2 border rounded">
-          <option>Seleccionar Charla</option>
-          <option>Charla Tecnología</option>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">🙋 Registro de Asistentes</h2>
+        <button onclick="mostrarFormularioAsistente()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">
+          + Registrar Asistente
+        </button>
+      </div>
+
+      <!-- Formulario de Asistente -->
+      <form id="formAsistente" class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4 mb-6">
+        <select id="usuarioAsistente" class="p-2 border rounded" required>
+          <option value="">Seleccionar Usuario</option>
+          <!-- Se llenará dinámicamente -->
         </select>
-        <label class="col-span-2 flex items-center gap-2">
-          <input type="checkbox"> Asistencia confirmada
-        </label>
-        <textarea placeholder="Observaciones" class="p-2 border rounded col-span-2"></textarea>
-        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Asistente</button>
+        <select id="charlaAsistente" class="p-2 border rounded" required>
+          <option value="">Seleccionar Charla</option>
+          <!-- Se llenará dinámicamente -->
+        </select>
+        <textarea id="observacionesAsistente" placeholder="Observaciones" class="p-2 border rounded col-span-2" rows="2"></textarea>
+        <button type="button" onclick="guardarAsistente()" class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">
+          Registrar Asistencia
+        </button>
       </form>
+
+      <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-green-900 text-white">
+            <tr>
+              <th class="p-2">Usuario</th>
+              <th class="p-2">Charla</th>
+              <th class="p-2">Fecha Asistencia</th>
+              <th class="p-2">Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaAsistentes" class="text-center">
+            <!-- Los asistentes se cargarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- REPORTES -->
     <section id="reportes" class="hidden">
       <h2 class="text-2xl font-bold mb-4">📊 Reportes</h2>
+      
       <div class="bg-white p-6 rounded-xl shadow grid grid-cols-3 gap-4 mb-6">
-        <input type="date" class="p-2 border rounded">
-        <input type="date" class="p-2 border rounded">
-        <select class="p-2 border rounded">
-          <option>Estado</option>
-          <option>Programada</option>
-          <option>Realizada</option>
-        </select>
-        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-3">Generar Reporte</button>
+        <input type="date" id="fechaDesde" class="p-2 border rounded">
+        <input type="date" id="fechaHasta" class="p-2 border rounded">
+        <button onclick="generarReporte()" class="bg-green-700 hover:bg-green-800 text-white rounded p-2">
+          Generar Reporte
+        </button>
       </div>
-      <table class="w-full bg-white rounded-xl shadow">
-        <thead class="bg-green-900 text-white">
-          <tr>
-            <th class="p-2">Charla</th>
-            <th class="p-2">Fecha</th>
-            <th class="p-2">Ponente</th>
-            <th class="p-2">Asistentes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="text-center border-b">
-            <td class="p-2">Charlas de Tecnología</td>
-            <td class="p-2">05/10/2025</td>
-            <td class="p-2">Juan Pérez</td>
-            <td class="p-2">58</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
 
-    <!-- CONFIG -->
-    <section id="config" class="hidden">
-      <h2 class="text-2xl font-bold mb-4">⚙️ Configuración</h2>
-      <form class="bg-white p-6 rounded-xl shadow grid grid-cols-2 gap-4">
-        <input type="text" placeholder="Nombre de la institución" class="p-2 border rounded">
-        <input type="text" placeholder="Dirección" class="p-2 border rounded">
-        <input type="file" class="p-2 border rounded col-span-2">
-        <label class="flex items-center gap-2 col-span-2">
-          <input type="checkbox"> Activar notificaciones
-        </label>
-        <button class="bg-green-700 hover:bg-green-800 text-white rounded p-2 col-span-2">Guardar Configuración</button>
-      </form>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h4 class="text-lg font-semibold mb-2">Charlas por Fecha</h4>
+          <canvas id="chartCharlasReporte"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow">
+          <h4 class="text-lg font-semibold mb-2">Asistencia por Charla</h4>
+          <canvas id="chartAsistenciaReporte"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-green-900 text-white">
+            <tr>
+              <th class="p-2">Charla</th>
+              <th class="p-2">Fecha</th>
+              <th class="p-2">Ponente</th>
+              <th class="p-2">Asistentes</th>
+              <th class="p-2">Categoría</th>
+            </tr>
+          </thead>
+          <tbody id="tablaReportes" class="text-center">
+            <!-- Los reportes se cargarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
     </section>
 
   </main>
 
   <script>
+    // Variables globales
+    let usuarios = [];
+    let charlas = [];
+    let asistentes = [];
+
     // Mostrar/Ocultar secciones
     function mostrarSeccion(id) {
       document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
       document.getElementById(id).classList.remove('hidden');
+      
+      // Cargar datos específicos de cada sección
+      switch(id) {
+        case 'dashboard':
+          cargarDashboard();
+          break;
+        case 'usuarios':
+          cargarUsuarios();
+          break;
+        case 'charlas':
+          cargarCharlas();
+          break;
+        case 'asistentes':
+          cargarAsistentes();
+          break;
+        case 'reportes':
+          cargarReportes();
+          break;
+      }
     }
 
-    // Cargar gráficos
-    new Chart(document.getElementById('chartCharlas'), {
-      type: 'bar',
-      data: {
-        labels: ['Educación', 'Tecnología', 'Salud', 'Cultura'],
-        datasets: [{ label: 'Charlas', data: [8, 15, 10, 6], backgroundColor: '#16a34a' }]
+    // ========== FUNCIONES DE USUARIOS ==========
+    function mostrarFormularioUsuario() {
+      const form = document.getElementById('formUsuario');
+      form.classList.toggle('hidden');
+    }
+
+    async function guardarUsuario() {
+      const usuario = {
+        nombre: document.getElementById('nombreUsuario').value,
+        email: document.getElementById('emailUsuario').value,
+        rol: document.getElementById('rolUsuario').value,
+        area: document.getElementById('areaUsuario').value
+      };
+
+      try {
+        // Aquí iría la llamada a la API para guardar el usuario
+        // Por ahora solo lo agregamos localmente
+        usuarios.push({...usuario, id: usuarios.length + 1, created_at: new Date().toISOString()});
+        cargarUsuarios();
+        document.getElementById('formUsuario').reset();
+        document.getElementById('formUsuario').classList.add('hidden');
+        alert('Usuario guardado correctamente');
+      } catch (error) {
+        console.error('Error al guardar usuario:', error);
+        alert('Error al guardar usuario');
       }
+    }
+
+    async function cargarUsuarios() {
+      try {
+        usuarios = await window.api.obtenerUsuarios();
+        const tbody = document.getElementById('tablaUsuarios');
+        tbody.innerHTML = '';
+        
+        usuarios.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="p-2">${u.id}</td>
+            <td class="p-2">${u.nombre || 'N/A'}</td>
+            <td class="p-2">${u.email || 'N/A'}</td>
+            <td class="p-2">${u.rol || 'Asistente'}</td>
+            <td class="p-2">${u.area || 'General'}</td>
+            <td class="p-2">${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('usuariosTotal').textContent = usuarios.length;
+      } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+      }
+    }
+
+    // ========== FUNCIONES DE CHARLAS ==========
+    function mostrarFormularioCharla() {
+      const form = document.getElementById('formCharla');
+      form.classList.toggle('hidden');
+    }
+
+    async function guardarCharla() {
+      const charla = {
+        titulo: document.getElementById('tituloCharla').value,
+        descripcion: document.getElementById('descripcionCharla').value,
+        fecha: document.getElementById('fechaCharla').value,
+        hora: document.getElementById('horaCharla').value,
+        ponente: document.getElementById('ponenteCharla').value,
+        categoria: document.getElementById('categoriaCharla').value,
+        cupo_maximo: document.getElementById('cupoCharla').value || null
+      };
+
+      try {
+        const resultado = await window.api.agregarCharla(charla);
+        alert('Charla guardada correctamente');
+        document.getElementById('formCharla').reset();
+        cargarCharlas();
+        cargarDashboard();
+      } catch (error) {
+        console.error('Error al guardar charla:', error);
+        alert('Error al guardar charla');
+      }
+    }
+
+    async function cargarCharlas() {
+      try {
+        charlas = await window.api.obtenerCharlas();
+        const tbody = document.getElementById('tablaCharlas');
+        tbody.innerHTML = '';
+        
+        charlas.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="p-2">${c.titulo}</td>
+            <td class="p-2">${c.ponente}</td>
+            <td class="p-2">${c.fecha}</td>
+            <td class="p-2">${c.hora}</td>
+            <td class="p-2">${c.categoria || 'General'}</td>
+            <td class="p-2">
+              <button class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm">
+                Editar
+              </button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('totalCharlas').textContent = charlas.length;
+      } catch (error) {
+        console.error('Error al cargar charlas:', error);
+      }
+    }
+
+    // ========== FUNCIONES DE ASISTENTES ==========
+    async function cargarSelectoresAsistentes() {
+      try {
+        // Cargar usuarios para el selector
+        const selectUsuario = document.getElementById('usuarioAsistente');
+        selectUsuario.innerHTML = '<option value="">Seleccionar Usuario</option>';
+        
+        usuarios.forEach(u => {
+          const option = document.createElement('option');
+          option.value = u.id;
+          option.textContent = `${u.nombre} (${u.email})`;
+          selectUsuario.appendChild(option);
+        });
+
+        // Cargar charlas para el selector
+        const selectCharla = document.getElementById('charlaAsistente');
+        selectCharla.innerHTML = '<option value="">Seleccionar Charla</option>';
+        
+        charlas.forEach(c => {
+          const option = document.createElement('option');
+          option.value = c.id;
+          option.textContent = `${c.titulo} - ${c.fecha}`;
+          selectCharla.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error al cargar selectores:', error);
+      }
+    }
+
+    async function guardarAsistente() {
+      const asistente = {
+        usuario_id: parseInt(document.getElementById('usuarioAsistente').value),
+        charla_id: parseInt(document.getElementById('charlaAsistente').value),
+        observaciones: document.getElementById('observacionesAsistente').value
+      };
+
+      try {
+        const resultado = await window.api.agregarAsistente(asistente);
+        alert('Asistente registrado correctamente');
+        document.getElementById('formAsistente').reset();
+        cargarAsistentes();
+        cargarDashboard();
+      } catch (error) {
+        console.error('Error al guardar asistente:', error);
+        alert('Error al guardar asistente');
+      }
+    }
+
+    async function cargarAsistentes() {
+      try {
+        asistentes = await window.api.obtenerAsistentes();
+        const tbody = document.getElementById('tablaAsistentes');
+        tbody.innerHTML = '';
+        
+        asistentes.forEach(a => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="p-2">${a.usuario_nombre || 'N/A'}</td>
+            <td class="p-2">${a.charla_titulo || 'N/A'}</td>
+            <td class="p-2">${a.fecha_asistencia ? new Date(a.fecha_asistencia).toLocaleDateString() : 'N/A'}</td>
+            <td class="p-2">${a.observaciones || 'Sin observaciones'}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('totalAsistentes').textContent = asistentes.length;
+      } catch (error) {
+        console.error('Error al cargar asistentes:', error);
+      }
+    }
+
+    // ========== FUNCIONES DEL DASHBOARD ==========
+    async function cargarDashboard() {
+      try {
+        // Cargar datos para el dashboard
+        await cargarUsuarios();
+        await cargarCharlas();
+        await cargarAsistentes();
+
+        // Calcular charlas de este mes
+        const ahora = new Date();
+        const mesActual = ahora.getMonth();
+        const añoActual = ahora.getFullYear();
+        
+        const charlasEsteMes = charlas.filter(c => {
+          const fechaCharla = new Date(c.fecha);
+          return fechaCharla.getMonth() === mesActual && fechaCharla.getFullYear() === añoActual;
+        });
+
+        document.getElementById('charlasEsteMes').textContent = charlasEsteMes.length;
+
+        // Mostrar charlas recientes
+        const listaCharlas = document.getElementById('listaCharlasRecientes');
+        listaCharlas.innerHTML = '';
+        
+        const charlasRecientes = charlas.slice(0, 5);
+        charlasRecientes.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'border-l-4 border-green-500 bg-gray-50 p-3';
+          div.innerHTML = `
+            <h5 class="font-semibold">${c.titulo}</h5>
+            <p class="text-sm text-gray-600">${c.ponente} - ${c.fecha}</p>`;
+          listaCharlas.appendChild(div);
+        });
+
+        // Actualizar gráfico de asistencia
+        actualizarGraficoAsistencia();
+      } catch (error) {
+        console.error('Error al cargar dashboard:', error);
+      }
+    }
+
+    function actualizarGraficoAsistencia() {
+      // Agrupar asistencias por fecha
+      const asistenciasPorFecha = {};
+      asistentes.forEach(a => {
+        if (a.fecha_asistencia) {
+          const fecha = a.fecha_asistencia.split('T')[0];
+          asistenciasPorFecha[fecha] = (asistenciasPorFecha[fecha] || 0) + 1;
+        }
+      });
+
+      const ctx = document.getElementById('chartAsistencia').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Object.keys(asistenciasPorFecha).slice(-7), // Últimos 7 días
+          datasets: [{
+            label: 'Asistencias',
+            data: Object.values(asistenciasPorFecha).slice(-7),
+            borderColor: '#15803d',
+            backgroundColor: 'rgba(21, 128, 61, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    // ========== FUNCIONES DE REPORTES ==========
+    async function generarReporte() {
+      const desde = document.getElementById('fechaDesde').value;
+      const hasta = document.getElementById('fechaHasta').value;
+
+      try {
+        let charlasFiltradas;
+        if (desde && hasta) {
+          charlasFiltradas = await window.api.filtrarCharlasPorFechas(desde, hasta);
+        } else {
+          charlasFiltradas = charlas;
+        }
+
+        // Actualizar tabla de reportes
+        const tbody = document.getElementById('tablaReportes');
+        tbody.innerHTML = '';
+        
+        charlasFiltradas.forEach(c => {
+          const asistentesCharla = asistentes.filter(a => a.charla_id === c.id).length;
+          const tr = document.createElement('tr');
+          tr.className = 'border-b hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="p-2">${c.titulo}</td>
+            <td class="p-2">${c.fecha}</td>
+            <td class="p-2">${c.ponente}</td>
+            <td class="p-2">${asistentesCharla}</td>
+            <td class="p-2">${c.categoria || 'General'}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        // Actualizar gráficos de reportes
+        actualizarGraficosReportes(charlasFiltradas);
+      } catch (error) {
+        console.error('Error al generar reporte:', error);
+      }
+    }
+
+    function actualizarGraficosReportes(charlasFiltradas) {
+      // Gráfico de charlas por fecha
+      const ctx1 = document.getElementById('chartCharlasReporte').getContext('2d');
+      new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: charlasFiltradas.map(c => c.fecha),
+          datasets: [{
+            label: 'Charlas',
+            data: charlasFiltradas.map(() => 1),
+            backgroundColor: '#16a34a'
+          }]
+        }
+      });
+
+      // Gráfico de asistencia por charla
+      const ctx2 = document.getElementById('chartAsistenciaReporte').getContext('2d');
+      new Chart(ctx2, {
+        type: 'pie',
+        data: {
+          labels: charlasFiltradas.map(c => c.titulo.substring(0, 20) + '...'),
+          datasets: [{
+            data: charlasFiltradas.map(c => 
+              asistentes.filter(a => a.charla_id === c.id).length
+            ),
+            backgroundColor: ['#16a34a', '#15803d', '#166534', '#14532d', '#0f766e']
+          }]
+        }
+      });
+    }
+
+    async function cargarReportes() {
+      await cargarSelectoresAsistentes();
+      generarReporte();
+    }
+
+    // ========== INICIALIZACIÓN ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cargar datos iniciales
+      cargarDashboard();
+      
+      // Configurar fecha actual en los filtros
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById('fechaDesde').value = hoy;
+      document.getElementById('fechaHasta').value = hoy;
     });
 
-    new Chart(document.getElementById('chartAsistencia'), {
-      type: 'line',
-      data: {
-        labels: ['01 Oct', '03 Oct', '05 Oct', '07 Oct'],
-        datasets: [{ label: 'Asistentes', data: [40, 55, 60, 48], borderColor: '#15803d', fill: false, tension: 0.3 }]
-      }
-    });
   </script>
 
 </body>
